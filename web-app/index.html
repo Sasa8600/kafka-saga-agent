@@ -207,7 +207,13 @@
 
     .btn-row {
       display: flex;
-      gap: 12px;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-sub-row {
+      display: flex;
+      gap: 10px;
     }
 
     button.btn-primary {
@@ -215,7 +221,7 @@
       background: linear-gradient(135deg, #0284c7, #2563eb);
       color: white;
       border: none;
-      padding: 12px 18px;
+      padding: 11px 16px;
       border-radius: 8px;
       font-weight: 700;
       font-size: 13px;
@@ -238,7 +244,7 @@
       background: linear-gradient(135deg, #dc2626, #991b1b);
       color: white;
       border: none;
-      padding: 12px 18px;
+      padding: 11px 16px;
       border-radius: 8px;
       font-weight: 700;
       font-size: 13px;
@@ -252,6 +258,29 @@
     }
 
     button.btn-danger:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    button.btn-warning {
+      width: 100%;
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: white;
+      border: none;
+      padding: 11px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+      transition: all 0.2s;
+    }
+
+    button.btn-warning:hover {
       opacity: 0.95;
       transform: translateY(-1px);
     }
@@ -282,6 +311,70 @@
       margin-top: 2px;
     }
 
+    /* Human in the loop Banner */
+    .hitl-approval-banner {
+      display: none;
+      background: rgba(245, 158, 11, 0.1);
+      border: 2px solid var(--status-warning);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+      animation: pulse 1.8s infinite;
+    }
+
+    .hitl-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--status-warning);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .hitl-desc {
+      font-size: 12px;
+      color: #fef3c7;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .hitl-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-approve {
+      flex: 1;
+      background: #059669;
+      color: white;
+      border: none;
+      padding: 9px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-approve:hover { background: #10b981; }
+
+    .btn-reject {
+      flex: 1;
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 9px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-reject:hover { background: #ef4444; }
+
     /* Badges */
     .badge {
       display: inline-flex;
@@ -295,6 +388,7 @@
 
     .badge-SUBMITTED { background: #334155; color: #cbd5e1; }
     .badge-IN_PROGRESS, .badge-RUNNING { background: #1e3a8a; color: #60a5fa; }
+    .badge-WAITING_FOR_APPROVAL { background: #78350f; color: #fde68a; border: 1px solid #f59e0b; animation: pulse 1.5s infinite; }
     .badge-COMPLETED { background: #064e3b; color: #34d399; }
     .badge-FAILED { background: #7f1d1d; color: #f87171; }
     .badge-COMPENSATING { background: #581c87; color: #c084fc; animation: pulse 1.5s infinite; }
@@ -322,6 +416,12 @@
     .step-card.active {
       border-color: var(--accent-blue);
       box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);
+    }
+
+    .step-card.waiting_for_approval {
+      border-color: var(--status-warning);
+      background: rgba(245, 158, 11, 0.08);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.2);
     }
 
     .step-card.completed {
@@ -375,6 +475,7 @@
     .term-time { color: #64748b; margin-right: 8px; }
     .term-kafka { color: #f59e0b; font-weight: 600; }
     .term-worker { color: #38bdf8; font-weight: 600; }
+    .term-hitl { color: #fbbf24; font-weight: 700; }
     .term-comp { color: #c084fc; font-weight: 600; }
     .term-ok { color: #10b981; }
     .term-err { color: #ef4444; }
@@ -389,12 +490,12 @@
         <div class="brand-icon">⚡</div>
         <div>
           <div class="brand-title">KAFKA-SAGA-AGENT</div>
-          <div class="brand-subtitle">Distributed Resilient Multi-Agent Orchestrator</div>
+          <div class="brand-subtitle">Distributed Resilient Multi-Agent Orchestrator (Phase 2 HITL Enabled)</div>
         </div>
       </div>
       <div class="cluster-status">
         <span class="status-dot"></span>
-        <span>Kafka KRaft & Redis Checkpointing: ACTIVE</span>
+        <span>Kafka KRaft, Redis & Human-in-the-Loop: ACTIVE</span>
       </div>
     </header>
 
@@ -405,8 +506,9 @@
         <div class="card-title">🎯 Dispatch Agentic Saga</div>
 
         <div class="quick-presets">
-          <button class="preset-btn" onclick="setPreset('audit')">Preset: Multi-Account Audit</button>
-          <button class="preset-btn" onclick="setPreset('failure')">Preset: Simulated AML Failure</button>
+          <button class="preset-btn" onclick="setPreset('audit')">1. Standard Audit (Success)</button>
+          <button class="preset-btn" onclick="setPreset('failure')">2. AML Trigger (Rollback)</button>
+          <button class="preset-btn" onclick="setPreset('hitl')">3. High-Value ($120k) [HITL Gate]</button>
         </div>
 
         <div class="input-group">
@@ -420,11 +522,16 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn-primary" onclick="launchSaga(false)">
-            <span>🚀</span> Launch Saga Flow
-          </button>
-          <button class="btn-danger" onclick="launchSaga(true)">
-            <span>⚡</span> Test Failure & Rollback
+          <div class="btn-sub-row">
+            <button class="btn-primary" onclick="launchSaga('normal')">
+              <span>🚀</span> Launch Saga Flow
+            </button>
+            <button class="btn-danger" onclick="launchSaga('failure')">
+              <span>⚡</span> Test Failure & Rollback
+            </button>
+          </div>
+          <button class="btn-warning" onclick="launchSaga('hitl')">
+            <span>🛡️</span> Launch with Human-in-the-Loop (HITL) Gate
           </button>
         </div>
       </div>
@@ -432,6 +539,16 @@
       <!-- Right: Active State Banner -->
       <div class="card">
         <div class="card-title">📊 Saga Execution Telemetry</div>
+
+        <!-- Human Approval Modal Banner -->
+        <div class="hitl-approval-banner" id="hitlBanner">
+          <div class="hitl-title">⚠️ Human-in-the-Loop Approval Required</div>
+          <div class="hitl-desc" id="hitlDesc">High-value threshold exceeded (> $100,000). Automated execution suspended pending Senior Compliance Officer sign-off.</div>
+          <div class="hitl-actions">
+            <button class="btn-approve" onclick="handleHumanDecision('approve')">✅ Approve & Resume Execution</button>
+            <button class="btn-reject" onclick="handleHumanDecision('reject')">❌ Reject & Trigger Rollback</button>
+          </div>
+        </div>
 
         <div class="saga-summary-box">
           <div>
@@ -455,7 +572,7 @@
         <!-- Steps Pipeline Visualizer -->
         <div class="steps-container" id="stepsPipeline">
           <div style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 30px;">
-            Awaiting Goal Submission... Click <strong>Launch Saga Flow</strong> or <strong>Test Failure & Rollback</strong> to observe live execution.
+            Awaiting Goal Submission... Click any button on the left to observe live execution.
           </div>
         </div>
       </div>
@@ -478,8 +595,10 @@
     function setPreset(type) {
       if (type === 'audit') {
         document.getElementById('goalInput').value = "Perform multi-account financial audit, AML screening, and ledger balance reconciliation for client #CLI-98213";
-      } else {
+      } else if (type === 'failure') {
         document.getElementById('goalInput').value = "Execute high-risk ledger transfer with simulated AML sanction violation";
+      } else if (type === 'hitl') {
+        document.getElementById('goalInput').value = "Execute high-value ($120,000) institutional asset transfer subject to mandatory HITL compliance gate";
       }
     }
 
@@ -493,21 +612,32 @@
       term.scrollTop = term.scrollHeight;
     }
 
-    async function launchSaga(simulateFailure) {
+    async function launchSaga(mode) {
       const goal = document.getElementById('goalInput').value.trim();
       const initiator = document.getElementById('initiatorInput').value.trim();
 
       if (!goal) return alert("Please specify a goal");
 
-      logTerm('REST', 'term-worker', `Dispatching ${simulateFailure ? 'FAILURE SIMULATION' : 'NORMAL'} Saga to /api/v1/sagas...`);
+      document.getElementById('hitlBanner').style.display = 'none';
 
-      const endpoint = simulateFailure ? '/api/v1/sagas/simulate-failure' : '/api/v1/sagas';
+      let endpoint = '/api/v1/sagas';
+      let payload = { goal, initiator };
+
+      if (mode === 'failure') {
+        endpoint = '/api/v1/sagas/simulate-failure';
+        payload.simulateFailure = true;
+      } else if (mode === 'hitl') {
+        endpoint = '/api/v1/sagas/high-value-approval';
+        payload.requireApproval = true;
+      }
+
+      logTerm('REST', 'term-worker', `Dispatching ${mode.toUpperCase()} Saga to ${endpoint}...`);
 
       try {
         const resp = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ goal, initiator, simulateFailure })
+          body: JSON.stringify(payload)
         });
 
         if (!resp.ok) throw new Error("Failed to dispatch saga");
@@ -531,6 +661,34 @@
       }
     }
 
+    async function handleHumanDecision(action) {
+      if (!activeSagaId) return;
+
+      logTerm('HITL', 'term-hitl', `Human operator clicked [${action.toUpperCase()}]. Sending decision to backend...`);
+
+      try {
+        const resp = await fetch(`/api/v1/sagas/${activeSagaId}/${action}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ approvedBy: "SeniorComplianceOfficer", notes: "Authorized via Real-Time Web Console" })
+        });
+
+        if (!resp.ok) throw new Error(`Failed to ${action} saga`);
+
+        document.getElementById('hitlBanner').style.display = 'none';
+
+        if (action === 'approve') {
+          logTerm('HITL', 'term-ok', `Human approval recorded! Resuming next task via Kafka...`);
+        } else {
+          logTerm('HITL', 'term-comp', `Saga REJECTED by human! Triggering automatic reverse compensation via Kafka...`);
+        }
+
+      } catch (err) {
+        logTerm('ERROR', 'term-err', err.message);
+        alert(err.message);
+      }
+    }
+
     async function fetchSagaStatus() {
       if (!activeSagaId) return;
 
@@ -547,6 +705,12 @@
         document.getElementById('dispProgress').innerText = `${data.currentStepIndex} / ${data.totalSteps}`;
 
         renderSteps(data.steps);
+
+        if (data.status === 'WAITING_FOR_APPROVAL') {
+          document.getElementById('hitlBanner').style.display = 'block';
+        } else {
+          document.getElementById('hitlBanner').style.display = 'none';
+        }
 
         if (data.status === 'COMPLETED') {
           clearInterval(pollInterval);
@@ -578,6 +742,7 @@
         let icon = '⏳';
         if (s.status === 'COMPLETED') icon = '✅';
         if (s.status === 'RUNNING') icon = '🔄';
+        if (s.status === 'WAITING_FOR_APPROVAL') icon = '⚠️';
         if (s.status === 'FAILED') icon = '❌';
         if (s.status === 'COMPENSATING' || s.status === 'COMPENSATED') icon = '↩️';
 
@@ -589,6 +754,7 @@
             </div>
             <div class="step-tool">Tool: ${s.toolName} ${s.compensationAction ? `| Rollback: ${s.compensationAction}` : ''}</div>
             ${s.errorMessage ? `<div style="color: var(--status-danger); font-size: 11px; margin-top: 4px;">⚠️ ${s.errorMessage}</div>` : ''}
+            ${s.status === 'WAITING_FOR_APPROVAL' ? `<div style="color: var(--status-warning); font-size: 11px; margin-top: 4px; font-weight:600;">⏳ Suspended: Awaiting Human Authorization</div>` : ''}
           </div>
           <div>
             <span class="badge badge-${s.status}">${s.status}</span>

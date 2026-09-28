@@ -57,6 +57,21 @@ public class SagaWorkerConsumer {
             String output = tool.execute(event.getInputPayload());
 
             step.setOutputPayload(output);
+
+            if (output != null && output.contains("SUSPENDED_FOR_APPROVAL")) {
+                log.warn("[KafkaWorker] Step {} requires Human-in-the-Loop approval! Suspending saga {}",
+                        event.getStepIndex(), event.getSagaId());
+                step.setStatus(StepStatus.WAITING_FOR_APPROVAL);
+                stepRepository.save(step);
+
+                SagaInstance saga = sagaRepository.findById(event.getSagaId()).orElseThrow();
+                saga.setStatus(SagaStatus.WAITING_FOR_APPROVAL);
+                sagaRepository.save(saga);
+
+                redisTemplate.opsForValue().set("saga:state:" + event.getSagaId(), SagaStatus.WAITING_FOR_APPROVAL.name());
+                return;
+            }
+
             step.setStatus(StepStatus.COMPLETED);
             step.setExecutedAt(Instant.now());
             stepRepository.save(step);
@@ -76,7 +91,7 @@ public class SagaWorkerConsumer {
         }
     }
 
-    private void advanceSaga(AgentTaskEvent completedEvent) {
+    public void advanceSaga(AgentTaskEvent completedEvent) {
         SagaInstance saga = sagaRepository.findById(completedEvent.getSagaId()).orElseThrow();
         int nextIndex = completedEvent.getStepIndex() + 1;
         saga.setCurrentStepIndex(nextIndex);

@@ -1,0 +1,44 @@
+# Compiled class files & build artifacts
+**/target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# IntelliJ IDEA
+**/.idea/
+*.iml
+*.iws
+*.ipr
+**/out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+
+# Visual Studio Code
+.vscode/
+
+# macOS system files
+**/.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Logs
+*.log
+logs/
+
+# Temporary / backup files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Package Locks & local Docker mounts
+docker_volumes/

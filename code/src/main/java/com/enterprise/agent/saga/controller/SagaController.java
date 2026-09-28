@@ -1,5 +1,6 @@
 package com.enterprise.agent.saga.controller;
 
+import com.enterprise.agent.saga.dto.ApprovalRequest;
 import com.enterprise.agent.saga.dto.SagaDetailResponse;
 import com.enterprise.agent.saga.dto.SagaRequest;
 import com.enterprise.agent.saga.dto.SagaResponse;
@@ -26,6 +27,35 @@ public class SagaController {
     public ResponseEntity<SagaResponse> simulateFailureSaga(@Valid @RequestBody SagaRequest request) {
         request.setSimulateFailure(true);
         SagaResponse response = sagaCoordinator.startSaga(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/high-value-approval")
+    public ResponseEntity<SagaResponse> submitHighValueSaga(@Valid @RequestBody SagaRequest request) {
+        request.setRequireApproval(true);
+        SagaResponse response = sagaCoordinator.startSaga(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{sagaId}/approve")
+    public ResponseEntity<SagaResponse> approveSaga(
+            @PathVariable String sagaId,
+            @RequestBody(required = false) ApprovalRequest approval) {
+        if (approval == null) {
+            approval = ApprovalRequest.builder().approvedBy("SeniorComplianceOfficer").notes("Overridden via UI").build();
+        }
+        SagaResponse response = sagaCoordinator.approveStep(sagaId, approval);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{sagaId}/reject")
+    public ResponseEntity<SagaResponse> rejectSaga(
+            @PathVariable String sagaId,
+            @RequestBody(required = false) ApprovalRequest approval) {
+        if (approval == null) {
+            approval = ApprovalRequest.builder().approvedBy("SeniorComplianceOfficer").notes("Rejected by compliance operator").build();
+        }
+        SagaResponse response = sagaCoordinator.rejectStep(sagaId, approval);
         return ResponseEntity.ok(response);
     }
 

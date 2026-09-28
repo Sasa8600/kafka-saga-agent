@@ -15,10 +15,17 @@ public class FraudRiskAuditTool implements AgentTool {
     @Override
     public String execute(String inputPayload) throws Exception {
         log.info("[FraudRiskAuditTool] Evaluating AML and transaction risk: {}", inputPayload);
+
         if (inputPayload != null && inputPayload.contains("SIMULATE_FAILURE")) {
             log.error("[FraudRiskAuditTool] Triggering simulated risk failure!");
             throw new IllegalStateException("CRITICAL_FRAUD_TRIGGER: Simulated AML sanction match detected");
         }
+
+        if (inputPayload != null && inputPayload.contains("REQUIRE_APPROVAL")) {
+            log.warn("[FraudRiskAuditTool] High-value transaction flagged! Suspending for Human-in-the-Loop approval.");
+            return "{\"status\":\"SUSPENDED_FOR_APPROVAL\", \"riskScore\": 78, \"verdict\": \"FLAGGED_FOR_HUMAN_REVIEW\", \"reason\": \"High-value threshold exceeded (> $100,000). Manual Senior Manager override required.\"}";
+        }
+
         return "{\"status\":\"PASSED\", \"riskScore\": 12, \"verdict\": \"LOW_RISK_APPROVED\"}";
     }
 

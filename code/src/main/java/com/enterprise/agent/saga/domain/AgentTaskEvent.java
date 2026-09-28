@@ -22,5 +22,6 @@ public class AgentTaskEvent implements Serializable {
     private String inputPayload;
     private String compensationAction;
     private boolean simulateFailure;
+    private boolean requireApproval;
     private Instant timestamp;
 }

@@ -19,4 +19,5 @@ public class SagaRequest {
     private String initiator;
 
     private boolean simulateFailure;
+    private boolean requireApproval;
 }

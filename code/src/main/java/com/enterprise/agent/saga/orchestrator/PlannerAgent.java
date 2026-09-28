@@ -14,8 +14,9 @@ import java.util.UUID;
 @Component
 public class PlannerAgent {
 
-    public List<SagaStep> plan(SagaInstance saga, boolean simulateFailure) {
-        log.info("[PlannerAgent] Decomposing goal into distributed agent steps: {}", saga.getGoal());
+    public List<SagaStep> plan(SagaInstance saga, boolean simulateFailure, boolean requireApproval) {
+        log.info("[PlannerAgent] Planning saga steps for goal: {} (failure={}, hitl={})",
+                saga.getGoal(), simulateFailure, requireApproval);
         List<SagaStep> steps = new ArrayList<>();
 
         steps.add(SagaStep.builder()
@@ -29,9 +30,14 @@ public class PlannerAgent {
                 .status(StepStatus.PENDING)
                 .build());
 
-        String fraudInput = simulateFailure
-                ? "{\"clientId\": \"CLI-98213\", \"riskCheck\": \"AML_PEP\", \"flag\": \"SIMULATE_FAILURE\"}"
-                : "{\"clientId\": \"CLI-98213\", \"riskCheck\": \"AML_PEP\"}";
+        String fraudInput;
+        if (simulateFailure) {
+            fraudInput = "{\"clientId\": \"CLI-98213\", \"riskCheck\": \"AML_PEP\", \"flag\": \"SIMULATE_FAILURE\"}";
+        } else if (requireApproval) {
+            fraudInput = "{\"clientId\": \"CLI-98213\", \"riskCheck\": \"AML_PEP\", \"flag\": \"REQUIRE_APPROVAL\"}";
+        } else {
+            fraudInput = "{\"clientId\": \"CLI-98213\", \"riskCheck\": \"AML_PEP\"}";
+        }
 
         steps.add(SagaStep.builder()
                 .id(UUID.randomUUID().toString())
