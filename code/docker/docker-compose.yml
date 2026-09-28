@@ -1,0 +1,64 @@
+services:
+  # PostgreSQL 16: Durable Saga State Log & Audit
+  postgres:
+    image: postgres:16-alpine
+    container_name: saga-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: saga_db
+      POSTGRES_USER: saga_user
+      POSTGRES_PASSWORD: saga_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    networks:
+      - saga-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U saga_user -d saga_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis 7: Distributed Locks, Checkpointing & Short-Term Memory
+  redis:
+    image: redis:7-alpine
+    container_name: saga-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - saga-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Apache Kafka (KRaft mode - modern, lightweight, no Zookeeper needed)
+  kafka:
+    image: bashj79/kafka-kraft:latest
+    container_name: saga-kafka
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - saga-net
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  saga-net:
+    driver: bridge
